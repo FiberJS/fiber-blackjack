@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -76,24 +76,143 @@
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _fiber = __webpack_require__(0);
+
+var _fiber2 = _interopRequireDefault(_fiber);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var NameSpace = {
+    Cards: _fiber2.default.namespace('cards')
+};
+
+exports.default = NameSpace;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _fiber = __webpack_require__(0);
+
+var _fiber2 = _interopRequireDefault(_fiber);
+
+var _card = __webpack_require__(3);
+
+var _card2 = _interopRequireDefault(_card);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var CardEvent = _fiber2.default.defineEventType({
+    card: _card2.default
+});
+var CardRequestEvent = _fiber2.default.defineEventType({
+    recipient: String
+});
+
+var Events = {};
+
+Events.Card = {};
+Events.Card.Request = _fiber2.default.defineEvent(CardRequestEvent, 'Card:Request');
+Events.Card.ServedFor = function (recipient) {
+    return _fiber2.default.defineEvent(CardEvent, 'Card:ServedFor:' + recipient);
+};
+
+exports.default = Events;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Card = function () {
+    function Card(card) {
+        _classCallCheck(this, Card);
+
+        this.suit = card.suit;
+        this.rank = card.rank;
+        this.symbol = symbols[card.suit];
+        this.value = isFinite(this.rank) ? parseInt(this.rank) : 10;
+    }
+
+    _createClass(Card, [{
+        key: 'clone',
+        value: function clone() {
+            return new Card(this);
+        }
+    }]);
+
+    return Card;
+}();
+
+exports.default = Card;
+
+
+var symbols = {
+    diams: '♦',
+    hearts: '♥',
+    spades: '♠',
+    clubs: '♣'
+};
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _fiberFramework = __webpack_require__(0);
 
 var _fiberFramework2 = _interopRequireDefault(_fiberFramework);
 
-var _dealer = __webpack_require__(2);
+var _deck = __webpack_require__(5);
+
+var _deck2 = _interopRequireDefault(_deck);
+
+var _dealer = __webpack_require__(6);
 
 var _dealer2 = _interopRequireDefault(_dealer);
 
-var _player = __webpack_require__(4);
+var _player = __webpack_require__(8);
 
 var _player2 = _interopRequireDefault(_player);
 
+var _namespace = __webpack_require__(1);
+
+var _namespace2 = _interopRequireDefault(_namespace);
+
+var _card = __webpack_require__(3);
+
+var _card2 = _interopRequireDefault(_card);
+
+var _events = __webpack_require__(2);
+
+var _events2 = _interopRequireDefault(_events);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import NameSpace from 'namespace';
-// import Events from 'events';
-
-__webpack_require__(6);
+__webpack_require__(15);
 
 // Debugger
 _fiberFramework2.default.Debugger.showEvents = true;
@@ -102,14 +221,22 @@ _fiberFramework2.default.Debugger.init();
 
 _fiberFramework2.default.app(function () {
     // data components
+    _deck2.default.attachTo(_namespace2.default.Cards);
 
     // ui components
     _dealer2.default.attachTo('dealer');
     _player2.default.attachTo('player');
 });
 
+window.Fiber = _fiberFramework2.default;
+
+window.deal = function (recipient) {
+    // const card = new Card({ suit, rank });
+    _fiberFramework2.default.namespace('cards').trigger(new _events2.default.Card.Request(recipient));
+};
+
 /***/ }),
-/* 2 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -125,7 +252,150 @@ var _fiber = __webpack_require__(0);
 
 var _fiber2 = _interopRequireDefault(_fiber);
 
-var _dealer = __webpack_require__(3);
+var _namespace = __webpack_require__(1);
+
+var _namespace2 = _interopRequireDefault(_namespace);
+
+var _events = __webpack_require__(2);
+
+var _events2 = _interopRequireDefault(_events);
+
+var _card = __webpack_require__(3);
+
+var _card2 = _interopRequireDefault(_card);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SUITS = ['diams', 'hearts', 'spades', 'clubs'];
+var RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k', 'a'];
+
+var DeckComponent = function (_Fiber$DataComponent) {
+    _inherits(DeckComponent, _Fiber$DataComponent);
+
+    function DeckComponent() {
+        _classCallCheck(this, DeckComponent);
+
+        return _possibleConstructorReturn(this, (DeckComponent.__proto__ || Object.getPrototypeOf(DeckComponent)).apply(this, arguments));
+    }
+
+    _createClass(DeckComponent, [{
+        key: 'init',
+        value: function init() {
+            this.cardSet = [];
+            this.fillCards();
+        }
+    }, {
+        key: 'listen',
+        value: function listen() {
+            var _this2 = this;
+
+            this.on(_namespace2.default.Cards).listen(_events2.default.Card.Request, function (event) {
+                return _this2.serveCard(event.recipient);
+            });
+        }
+    }, {
+        key: 'serveCard',
+        value: function serveCard(recipient) {
+            var CardServedEvent = _events2.default.Card.ServedFor(recipient);
+            this.on(_namespace2.default.Cards).trigger(new CardServedEvent(this.pullCard()));
+        }
+    }, {
+        key: 'fillCards',
+        value: function fillCards() {
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = SUITS[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var suit = _step.value;
+                    var _iteratorNormalCompletion2 = true;
+                    var _didIteratorError2 = false;
+                    var _iteratorError2 = undefined;
+
+                    try {
+                        for (var _iterator2 = RANKS[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                            var rank = _step2.value;
+
+                            this.cardSet.push(new _card2.default({ suit: suit, rank: rank }));
+                        }
+                    } catch (err) {
+                        _didIteratorError2 = true;
+                        _iteratorError2 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                _iterator2.return();
+                            }
+                        } finally {
+                            if (_didIteratorError2) {
+                                throw _iteratorError2;
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'pullCard',
+        value: function pullCard() {
+            if (!this.cardSet.length) {
+                this.fillCards();
+            }
+            var pos = Math.floor(Math.random() * this.cardSet.length);
+            var card = this.cardSet[pos];
+
+            this.cardSet = this.cardSet.slice(0, pos).concat(this.cardSet.slice(pos + 1));
+            return card;
+        }
+    }]);
+
+    return DeckComponent;
+}(_fiber2.default.DataComponent);
+
+exports.default = DeckComponent;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _fiber = __webpack_require__(0);
+
+var _fiber2 = _interopRequireDefault(_fiber);
+
+var _cardHand = __webpack_require__(17);
+
+var _cardHand2 = _interopRequireDefault(_cardHand);
+
+var _dealer = __webpack_require__(7);
 
 var _dealer2 = _interopRequireDefault(_dealer);
 
@@ -148,7 +418,9 @@ var DealerComponent = function (_Fiber$UIComponent$wi) {
 
     _createClass(DealerComponent, [{
         key: 'listen',
-        value: function listen() {}
+        value: function listen() {
+            _cardHand2.default.attachTo(this.view.querySelector('cards'), 'dealer');
+        }
     }]);
 
     return DealerComponent;
@@ -157,13 +429,13 @@ var DealerComponent = function (_Fiber$UIComponent$wi) {
 exports.default = DealerComponent;
 
 /***/ }),
-/* 3 */
+/* 7 */
 /***/ (function(module, exports) {
 
-module.exports = "<h2>Dealer</h2>\n";
+module.exports = "<h2>Dealer</h2>\n<cards class=\"playingCards\"></cards>\n";
 
 /***/ }),
-/* 4 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -179,7 +451,23 @@ var _fiber = __webpack_require__(0);
 
 var _fiber2 = _interopRequireDefault(_fiber);
 
-var _player = __webpack_require__(5);
+var _namespace = __webpack_require__(1);
+
+var _namespace2 = _interopRequireDefault(_namespace);
+
+var _events = __webpack_require__(2);
+
+var _events2 = _interopRequireDefault(_events);
+
+var _cardHolder = __webpack_require__(9);
+
+var _cardHolder2 = _interopRequireDefault(_cardHolder);
+
+var _cardHand = __webpack_require__(17);
+
+var _cardHand2 = _interopRequireDefault(_cardHand);
+
+var _player = __webpack_require__(14);
 
 var _player2 = _interopRequireDefault(_player);
 
@@ -191,8 +479,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var PlayerComponent = function (_Fiber$UIComponent$wi) {
-    _inherits(PlayerComponent, _Fiber$UIComponent$wi);
+var PlayerComponent = function (_CardHolderBaseCompon) {
+    _inherits(PlayerComponent, _CardHolderBaseCompon);
 
     function PlayerComponent() {
         _classCallCheck(this, PlayerComponent);
@@ -202,25 +490,404 @@ var PlayerComponent = function (_Fiber$UIComponent$wi) {
 
     _createClass(PlayerComponent, [{
         key: 'listen',
-        value: function listen() {}
+        value: function listen() {
+            var _this2 = this;
+
+            this.on(_namespace2.default.Cards).listen(_events2.default.Card.ServedFor('player'), function (event) {
+                return _this2.addCard(event.card);
+            });
+
+            _cardHand2.default.attachTo(this.view.querySelector('cards'), 'player');
+        }
     }]);
 
     return PlayerComponent;
-}(_fiber2.default.UIComponent.withTemplate(_player2.default));
+}(_cardHolder2.default.withTemplate(_player2.default));
 
 exports.default = PlayerComponent;
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports) {
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<h2>Playa</h2>\n";
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _fiber = __webpack_require__(0);
+
+var _fiber2 = _interopRequireDefault(_fiber);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CardHolderBaseComponent = function (_Fiber$UIComponent) {
+    _inherits(CardHolderBaseComponent, _Fiber$UIComponent);
+
+    function CardHolderBaseComponent() {
+        _classCallCheck(this, CardHolderBaseComponent);
+
+        return _possibleConstructorReturn(this, (CardHolderBaseComponent.__proto__ || Object.getPrototypeOf(CardHolderBaseComponent)).apply(this, arguments));
+    }
+
+    _createClass(CardHolderBaseComponent, [{
+        key: 'init',
+        value: function init() {
+            this.cards = [];
+            this.score = 0;
+        }
+    }, {
+        key: 'addCard',
+        value: function addCard(card) {
+            this.cards.push(card);
+            this.updateScore();
+            // console.log(card);
+        }
+    }, {
+        key: 'updateScore',
+        value: function updateScore() {
+            var score = 0;
+            this.cards.forEach(function (card) {
+                score += card.value;
+            });
+        }
+    }]);
+
+    return CardHolderBaseComponent;
+}(_fiber2.default.UIComponent);
+
+exports.default = CardHolderBaseComponent;
 
 /***/ }),
-/* 6 */
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _fiber = __webpack_require__(0);
+
+var _fiber2 = _interopRequireDefault(_fiber);
+
+var _card = __webpack_require__(11);
+
+var _card2 = _interopRequireDefault(_card);
+
+var _card3 = __webpack_require__(12);
+
+var _card4 = _interopRequireDefault(_card3);
+
+var _PatchIt = __webpack_require__(13);
+
+var _PatchIt2 = _interopRequireDefault(_PatchIt);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var cardTemplate = _PatchIt2.default.template(_card2.default, _card4.default);
+
+var CardGeneratorComponent = function (_Fiber$UIComponent$wi) {
+    _inherits(CardGeneratorComponent, _Fiber$UIComponent$wi);
+
+    function CardGeneratorComponent() {
+        _classCallCheck(this, CardGeneratorComponent);
+
+        return _possibleConstructorReturn(this, (CardGeneratorComponent.__proto__ || Object.getPrototypeOf(CardGeneratorComponent)).apply(this, arguments));
+    }
+
+    _createClass(CardGeneratorComponent, null, [{
+        key: 'renderCard',
+        value: function renderCard(card) {
+            return cardTemplate.render(card);
+        }
+    }]);
+
+    return CardGeneratorComponent;
+}(_fiber2.default.UIComponent.withTemplate(cardTemplate));
+
+exports.default = CardGeneratorComponent;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+module.exports = "<card var=\"card\" class=\"card\">\n    <span class=\"rank\" var=\"rank\"></span>\n    <span class=\"suit\" var=\"suit\"></span>\n</card>\n";
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var cardPatch = function cardPatch(view) {
+    return {
+        rank: function rank(_rank) {
+            view.$.rank.innerHTML = _rank.toString().toUpperCase();
+            view.$.card.className += " rank-" + _rank.toString().toLowerCase();
+        },
+        suit: function suit(_suit) {
+            view.$.card.className += " " + _suit;
+        },
+        symbol: function symbol(_symbol) {
+            view.$.suit.innerHTML = _symbol;
+        }
+    };
+};
+exports.default = cardPatch;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+const PatchIt = {};
+
+PatchIt.template = function(html, patch) {
+    return new PatchTemplate(html, patch);
+};
+
+class PatchTemplate {
+    constructor(html, patch) {
+        this.html = this.processTemplate(html);
+        this.patch = patch;
+    }
+
+    render(state) {
+        const view = this.html.cloneNode(true);
+        PatchIt.assignVariables(view);
+
+        const viewPatch = new ViewPatch(view, this.patch);
+        view.apply = (state) => viewPatch.apply(state);
+
+        state && viewPatch.apply(state);
+        return view;
+    }
+
+    processTemplate(html) {
+        return typeof html == 'string'
+            ? generateDOM(html)
+            : html;
+    }
+}
+
+
+class ViewPatch {
+    constructor(view, patch) {
+        this.view = view;
+        this.patch = patch(view);
+        this.state = {};
+
+        this.methodify();
+    }
+
+    apply(state) {
+        let changes = this.process(state);
+
+        for(let key in changes) {
+            if(!this.patch[key]) continue;
+
+            let change = changes[key];
+            this.patch[key](change, state);
+        }
+    }
+
+    process(newState) {
+        const changes = {};
+        const allKeys = new Set();
+        Object.getOwnPropertyNames(this.state)
+            .concat(Object.getOwnPropertyNames(newState))
+            .forEach((key)=>{
+                allKeys.add(key);
+            });
+
+        for(let key of allKeys) {
+            if(this.state[key] != newState[key]) {
+                changes[key] = newState[key];
+            }
+        }
+        this.state = clone(newState);
+        return changes;
+    }
+
+    methodify() {
+        for(let key of Object.getOwnPropertyNames(this.patch)) {
+            if(this.patch[key] instanceof Array) {
+                const elements = this.patch[key];
+                this.patch[key] = (value) => {
+                    for(let element of elements) {
+                        updateElement(element, value);
+                    }
+                };
+            }
+        }
+    }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (PatchIt);
+
+function updateElement(element, value) {
+    const setProperty = (prop) => {
+        return typeof element[prop] == 'undefined'
+            ? false
+            : (element[prop] = value)
+            ;
+    };
+
+    setProperty('value') || setProperty('textContent');
+}
+
+PatchIt.assignVariables =  parentElement => {
+    parentElement.$ || (parentElement.$ = {});
+    if(parentElement.attributes['var']) {
+        parentElement.$[parentElement.attributes['var'].value] = parentElement;
+    }
+    parentElement.querySelectorAll('[var]').forEach((element) => {
+        parentElement.$[element.attributes['var'].value] = element;
+    });
+
+    return parentElement;
+};
+
+function generateDOM(html) {
+    var parent = document.createElement('div');
+    parent.innerHTML = html;
+
+    if(parent.childElementCount == 1) {
+        return parent.firstElementChild;
+    }
+
+    return parent;
+}
+
+function clone(obj) {
+    if(obj instanceof Array) return obj.slice();
+
+    const copied = {};
+
+    for(let key of Object.getOwnPropertyNames(obj)) {
+        copied[key] = (typeof obj[key] == 'object') ? clone(obj[key]) : obj[key];
+    }
+
+    return copied;
+}
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+module.exports = "<h2>Playa</h2>\n<cards class=\"playingCards\"></cards>\n";
+
+/***/ }),
+/* 15 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 16 */,
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _fiber = __webpack_require__(0);
+
+var _fiber2 = _interopRequireDefault(_fiber);
+
+var _namespace = __webpack_require__(1);
+
+var _namespace2 = _interopRequireDefault(_namespace);
+
+var _events = __webpack_require__(2);
+
+var _events2 = _interopRequireDefault(_events);
+
+var _cardHolder = __webpack_require__(9);
+
+var _cardHolder2 = _interopRequireDefault(_cardHolder);
+
+var _card = __webpack_require__(10);
+
+var _card2 = _interopRequireDefault(_card);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CardHandComponent = function (_Fiber$UIComponent) {
+    _inherits(CardHandComponent, _Fiber$UIComponent);
+
+    function CardHandComponent() {
+        _classCallCheck(this, CardHandComponent);
+
+        return _possibleConstructorReturn(this, (CardHandComponent.__proto__ || Object.getPrototypeOf(CardHandComponent)).apply(this, arguments));
+    }
+
+    _createClass(CardHandComponent, [{
+        key: 'init',
+        value: function init(name) {
+            this.name = name;
+        }
+    }, {
+        key: 'listen',
+        value: function listen() {
+            var _this2 = this;
+
+            this.on(_namespace2.default.Cards).listen(_events2.default.Card.ServedFor(this.name), function (event) {
+                return _this2.addCard(event.card);
+            });
+
+            this.view.className = 'playingCards';
+        }
+    }, {
+        key: 'addCard',
+        value: function addCard(card) {
+            this.view.appendChild(_card2.default.renderCard(card));
+        }
+    }]);
+
+    return CardHandComponent;
+}(_fiber2.default.UIComponent);
+
+exports.default = CardHandComponent;
 
 /***/ })
 /******/ ]);
