@@ -1,5 +1,6 @@
 import Fiber from 'fiber-framework';
-import DeckComponent from 'components/data/deck/deck';
+import DeckComponent from 'components/data/deck';
+import GameComponent from 'components/data/game';
 import DealerComponent from 'components/ui/dealer/dealer';
 import PlayerComponent from 'components/ui/player/player';
 import NameSpace from 'namespace';
@@ -14,6 +15,7 @@ Fiber.Debugger.init();
 Fiber.app(() => {
     // data components
     DeckComponent.attachTo(NameSpace.Cards);
+    GameComponent.attachTo(NameSpace.Game);
 
     // ui components
     DealerComponent.attachTo('dealer');
@@ -24,9 +26,9 @@ window.Fiber = Fiber;
 
 import Card from 'domain/card';
 import Events from 'events';
-window.deal = (recipient) => {
+window.deal = (recipient, reversed) => {
     // const card = new Card({ suit, rank });
-    Fiber.namespace('cards').trigger(
-        new Events.Card.Request(recipient)
+    Fiber.namespace('data/cards').trigger(
+        new Events.Card.Request(recipient, reversed)
     );
 }

@@ -15,14 +15,14 @@ class DeckComponent extends Fiber.DataComponent {
 
     listen() {
         this.on(NameSpace.Cards).listen(
-            Events.Card.Request, event => this.serveCard(event.recipient)
+            Events.Card.Request, event => this.serveCard(event.recipient, event.face)
         );
     }
 
-    serveCard(recipient) {
+    serveCard(recipient, face) {
         const CardServedEvent = Events.Card.ServedFor(recipient);
         this.on(NameSpace.Cards).trigger(
-            new CardServedEvent(this.pullCard())
+            new CardServedEvent(this.pullCard(face === Card.Reversed))
         );
     }
 
@@ -34,7 +34,7 @@ class DeckComponent extends Fiber.DataComponent {
         }
     }
 
-    pullCard() {
+    pullCard(reversed) {
         if(!this.cardSet.length) {
             this.fillCards();
         }
@@ -42,7 +42,7 @@ class DeckComponent extends Fiber.DataComponent {
         const card = this.cardSet[pos];
 
         this.cardSet = this.cardSet.slice(0, pos).concat(this.cardSet.slice(pos+1));
-        return card;
+        return reversed ? card.flip() : card;
     }
 }
 

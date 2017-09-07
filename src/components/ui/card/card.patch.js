@@ -4,12 +4,15 @@ const cardPatch = (view) => {
             view.$.rank.innerHTML = rank.toString().toUpperCase();
             view.$.card.className += ` rank-${rank.toString().toLowerCase()}`;
         },
-        suit : (suit) => {
-            view.$.card.className += ` ${suit}`;
+        suit : (suit, card) => {
+            view.$.card.className += ` ${card.reversed ? 'back-' : ''}${suit}`;
         },
         symbol : (symbol) => {
             view.$.suit.innerHTML = symbol;
-        }
+        },
+        reversed : (reversed) => {
+            reversed && (view.$.card.className += ` back`);
+        },
     };
 };
 export default cardPatch;
