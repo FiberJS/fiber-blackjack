@@ -1,0 +1,19 @@
+cards {
+  display: block;
+  clear: both;
+  height: 100px; }
+  cards card {
+    float: left; }
+player {
+  display: block; }
+  player controls {
+    clear: both;
+    padding: 20px;
+    display: block; }
+    player controls button {
+      margin-right: 20px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      background-color: #fefefe;
+      width: 100px; }

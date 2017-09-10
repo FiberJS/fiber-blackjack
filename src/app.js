@@ -1,8 +1,8 @@
 import Fiber from 'fiber-framework';
 import DeckComponent from 'components/data/deck';
 import GameComponent from 'components/data/game';
-import DealerComponent from 'components/ui/dealer/dealer';
-import PlayerComponent from 'components/ui/player/player';
+import DealerComponent from 'components/ui/dealer/dealer.js';
+import PlayerComponent from 'components/ui/player/player.js';
 import NameSpace from 'namespace';
 
 require('./app.scss');

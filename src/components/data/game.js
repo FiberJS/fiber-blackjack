@@ -11,6 +11,7 @@ class GameComponent extends Fiber.DataComponent {
         );
         this.on(NameSpace.Game).listen(
             Events.Game.Reset, event => this.initGame(),
+            Events.Game.ScoreUpdated, event => this.checkScores(),
         );
     }
 
@@ -28,6 +29,10 @@ class GameComponent extends Fiber.DataComponent {
         this.on(NameSpace.Cards).trigger(
             new Events.Card.Request('player')
         );
+    }
+
+    checkScores() {
+        console.log(NameSpace.Game.state.scores);
     }
 }
 

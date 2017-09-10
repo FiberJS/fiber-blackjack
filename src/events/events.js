@@ -1,15 +1,5 @@
 import Fiber from 'fiber';
-import { Optional } from 'fiber-framework/domain';
-import Card from 'domain/card';
-
-const CardEvent = Fiber.defineEventType({
-    card: Card,
-});
-
-const CardRequestEvent = Fiber.defineEventType({
-    recipient: String,
-    face: Optional(String),
-});
+import { CardEvent, CardRequestEvent, PlayerEvent, ScoreEvent } from './event-types';
 
 const Events = {};
 
@@ -18,6 +8,11 @@ Events.Card.Request = Fiber.defineEvent(CardRequestEvent, `Card:Request`);
 Events.Card.ServedFor = recipient => Fiber.defineEvent(CardEvent, `Card:ServedFor:${recipient}`);
 
 Events.Game = {};
-Events.Game.Reset = Fiber.defineEvent(Fiber.basicEvent(), `Game:Reset`);
+Events.Game.Reset = Fiber.basicEvent('Game:Reset');
+Events.Game.ScoreUpdated = Fiber.defineEvent(ScoreEvent, `Game:ScoreUpdated`);
+
+Events.Player = {};
+Events.Player.Joined = Fiber.defineEvent(PlayerEvent, 'Player:Joined');
+Events.Player.Left = Fiber.defineEvent(PlayerEvent, 'Player:Left');
 
 export default Events;

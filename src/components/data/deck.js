@@ -4,7 +4,7 @@ import Events from 'events';
 import Card from 'domain/card';
 
 const SUITS = ['diams', 'hearts', 'spades', 'clubs'];
-var RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k', 'a'];
+const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k', 'a'];
 
 class DeckComponent extends Fiber.DataComponent {
 

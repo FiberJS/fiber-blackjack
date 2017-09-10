@@ -3,6 +3,7 @@ import NameSpace from 'namespace';
 import Events from 'events';
 import CardHolderBaseComponent from 'domain/card-holder';
 import CardGeneratorComponent from 'components/ui/card/card';
+import styles from './card-hand.scss';
 
 class CardHandComponent extends Fiber.UIComponent {
 
@@ -14,8 +15,6 @@ class CardHandComponent extends Fiber.UIComponent {
         this.on(NameSpace.Cards).listen(
             Events.Card.ServedFor(this.name), event => this.addCard(event.card)
         );
-
-        this.view.className = 'playingCards';
     }
 
     addCard(card) {
