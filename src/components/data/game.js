@@ -12,6 +12,7 @@ class GameComponent extends Fiber.DataComponent {
         this.on(NameSpace.Game).listen(
             Events.Game.Reset, event => this.initGame(),
             Events.Game.ScoreUpdated, event => this.checkScores(),
+            Events.Game.EndOfRound, event => this.endOfRound(),
         );
     }
 
@@ -33,6 +34,34 @@ class GameComponent extends Fiber.DataComponent {
 
     checkScores() {
         console.log(NameSpace.Game.state.scores);
+    }
+
+    callDealerCard() {
+        console.log('callDealerCard called');
+        setTimeout(() => {
+            console.log('callDealerCard activating');
+            this.on(NameSpace.Cards).trigger(
+                new Events.Card.Request('dealer')
+            );
+            this.on(NameSpace.Game).trigger(
+                new Events.Game.EndOfRound()
+            );
+        }, 500);
+    }
+
+    endOfRound() {
+        if(NameSpace.Game.state.scores.dealer < 16) {
+            return this.callDealerCard();
+        }
+        if(NameSpace.Game.state.scores.dealer > 21) {
+            console.log("you won!");
+        } else if(NameSpace.Game.state.scores.player > 21) {
+            console.log("bad luck!");
+        } else if(NameSpace.Game.state.scores.player > NameSpace.Game.state.scores.dealer){
+            console.log("you won!");
+        } else {
+            console.log("bad luck!");
+        }
     }
 }
 

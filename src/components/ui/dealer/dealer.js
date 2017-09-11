@@ -1,14 +1,36 @@
 import Fiber from 'fiber';
+import NameSpace from 'namespace';
+import Events from 'events';
+import CardHolderBaseComponent from 'domain/card-holder';
 import CardHandComponent from 'components/ui/card-hand/card-hand.js';
 import dealerTemplate from './dealer.html';
 
-class DealerComponent extends Fiber.UIComponent.withTemplate(dealerTemplate) {
+class DealerComponent extends CardHolderBaseComponent.withTemplate(dealerTemplate) {
 
     listen() {
+        this.on(NameSpace.Cards).listen(
+            Events.Card.ServedFor('dealer'), event => this.update(event.card),
+        );
+        this.on(NameSpace.Game).listen(
+            Events.Game.EndOfRound, event => this.flipCard(),
+        );
+
         CardHandComponent.attachTo(
             this.view.querySelector('cards'),
             'dealer'
         );
+    }
+
+    update(card) {
+        this.addCard(card);
+        this.on(NameSpace.Game).trigger(
+            new Events.Game.ScoreUpdated('dealer', this.score)
+        );
+    }
+
+    flipCard() {
+        const card = this.view.querySelector('cards .back');
+        card && (card.className = card.className.replace(/(back-|back)/g,''));
     }
 }
 

@@ -41,7 +41,9 @@ class PlayerComponent extends CardHolderBaseComponent.withTemplate(playerTemplat
     }
 
     stick() {
-
+        this.on(NameSpace.Game).trigger(
+            new Events.Game.EndOfRound()
+        );
     }
 }
 

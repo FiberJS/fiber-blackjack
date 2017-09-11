@@ -10,6 +10,7 @@ Events.Card.ServedFor = recipient => Fiber.defineEvent(CardEvent, `Card:ServedFo
 Events.Game = {};
 Events.Game.Reset = Fiber.basicEvent('Game:Reset');
 Events.Game.ScoreUpdated = Fiber.defineEvent(ScoreEvent, `Game:ScoreUpdated`);
+Events.Game.EndOfRound = Fiber.basicEvent('Game:EndOfRound');
 
 Events.Player = {};
 Events.Player.Joined = Fiber.defineEvent(PlayerEvent, 'Player:Joined');
