@@ -1,8 +1,9 @@
 import Fiber from 'fiber';
 import GameSpace from './game.namespace';
+import CardSpace from './cards.namespace';
 
 const NameSpace = {
-    Cards : Fiber.namespace('data/cards'),
+    Cards : CardSpace,
     Game  : GameSpace,
 };
 

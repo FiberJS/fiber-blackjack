@@ -8,6 +8,7 @@ import dealerTemplate from './dealer.html';
 class DealerComponent extends CardHolderBaseComponent.withTemplate(dealerTemplate) {
 
     listen() {
+        super.listen();
         this.on(NameSpace.Cards).listen(
             Events.Card.ServedFor('dealer'), event => this.update(event.card),
         );

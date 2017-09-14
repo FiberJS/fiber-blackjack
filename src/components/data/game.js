@@ -17,50 +17,70 @@ class GameComponent extends Fiber.DataComponent {
     }
 
     initGame() {
-        this.on(NameSpace.Cards).trigger(
-            new Events.Card.Request('dealer', Card.Reversed)
-        );
-        this.on(NameSpace.Cards).trigger(
-            new Events.Card.Request('dealer')
-        );
-
-        this.on(NameSpace.Cards).trigger(
-            new Events.Card.Request('player')
-        );
-        this.on(NameSpace.Cards).trigger(
+        this.on(NameSpace.Cards).triggerSequence(
+            new Events.Card.Cleanup(),
+            new Events.Card.Request('dealer', Card.Reversed),
+            new Events.Card.Request('dealer'),
+            new Events.Card.Request('player'),
             new Events.Card.Request('player')
         );
     }
 
     checkScores() {
-        console.log(NameSpace.Game.state.scores);
+        const scores = NameSpace.Game.state.scores;
+        const cards = NameSpace.Cards.state.cards;
+
+        if(scores.player == 21 && cards.player == 2) {
+            this.on(NameSpace.Game).trigger(
+                new Events.Game.Over("player", "BlackJack!!!!")
+            );
+        }
+        else if(scores.player > 21) {
+            this.on(NameSpace.Game).trigger(
+                new Events.Game.Over("dealer", "Over stretched there a bit")
+            );
+        }
     }
 
     callDealerCard() {
-        console.log('callDealerCard called');
         setTimeout(() => {
-            console.log('callDealerCard activating');
             this.on(NameSpace.Cards).trigger(
                 new Events.Card.Request('dealer')
-            );
-            this.on(NameSpace.Game).trigger(
-                new Events.Game.EndOfRound()
-            );
+            ).then( result => {
+                this.on(NameSpace.Game).trigger(
+                    new Events.Game.EndOfRound()
+                );
+            })
         }, 500);
     }
 
     endOfRound() {
-        if(NameSpace.Game.state.scores.dealer < 16) {
+        const scores = NameSpace.Game.state.scores;
+        const cards = NameSpace.Cards.state.cards;
+
+        if(scores.dealer < 16) {
             return this.callDealerCard();
         }
-        if(NameSpace.Game.state.scores.dealer > 21) {
-            console.log("you won!");
-        } else if(NameSpace.Game.state.scores.player > 21) {
-            console.log("bad luck!");
-        } else if(NameSpace.Game.state.scores.player > NameSpace.Game.state.scores.dealer){
-            console.log("you won!");
+        if(scores.dealer == 21 && cards.dealer == 2) {
+            this.on(NameSpace.Game).trigger(
+                new Events.Game.Over("dealer", "Oops...")
+            );
+        } else if(scores.dealer > 21) {
+            this.on(NameSpace.Game).trigger(
+                new Events.Game.Over("player", "Dealer was unlucky :)")
+            );
+        } else if(scores.player > 21) {
+            this.on(NameSpace.Game).trigger(
+                new Events.Game.Over("dealer", "Over stretched there a bit")
+            );
+        } else if(scores.player >= scores.dealer){
+            this.on(NameSpace.Game).trigger(
+                new Events.Game.Over("player", "Good game!")
+            );
         } else {
-            console.log("bad luck!");
+            this.on(NameSpace.Game).trigger(
+                new Events.Game.Over("dealer", "Bad luck...")
+            );
         }
     }
 }

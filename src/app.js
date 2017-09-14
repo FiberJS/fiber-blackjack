@@ -3,12 +3,13 @@ import DeckComponent from 'components/data/deck';
 import GameComponent from 'components/data/game';
 import DealerComponent from 'components/ui/dealer/dealer.js';
 import PlayerComponent from 'components/ui/player/player.js';
+import GameConsoleComponent from 'components/ui/game-console/game-console.js';
 import NameSpace from 'namespace';
 
 require('./app.scss');
 
 // Debugger
-Fiber.Debugger.showEvents = true;
+// Fiber.Debugger.showEvents = true;
 // Fiber.Debugger.showView = true;
 Fiber.Debugger.init();
 
@@ -20,6 +21,7 @@ Fiber.app(() => {
     // ui components
     DealerComponent.attachTo('dealer');
     PlayerComponent.attachTo('player');
+    GameConsoleComponent.attachTo('game-console');
 });
 
 window.Fiber = Fiber;

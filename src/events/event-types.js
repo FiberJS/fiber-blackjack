@@ -20,3 +20,8 @@ export const ScoreEvent = Fiber.defineEventType({
     recipient: String,
     score: Number,
 });
+
+export const GameOverEvent = Fiber.defineEventType({
+    winner: String,
+    message: String,
+});

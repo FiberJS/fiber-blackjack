@@ -10,8 +10,13 @@ import styles from './player.scss';
 class PlayerComponent extends CardHolderBaseComponent.withTemplate(playerTemplate) {
 
     listen() {
+        super.listen();
         this.on(NameSpace.Cards).listen(
             Events.Card.ServedFor('player'), event => this.update(event.card)
+        );
+        this.on(NameSpace.Game).listen(
+            Events.Game.Reset, event => this.reset(),
+            Events.Game.Over, event => this.gameOver(),
         );
 
         this.ui('.hit').listen(
@@ -44,6 +49,14 @@ class PlayerComponent extends CardHolderBaseComponent.withTemplate(playerTemplat
         this.on(NameSpace.Game).trigger(
             new Events.Game.EndOfRound()
         );
+    }
+
+    reset() {
+        this.view.querySelectorAll('button').forEach( btn => { btn.disabled = false; } );
+    }
+
+    gameOver() {
+        this.view.querySelectorAll('button').forEach( btn => { btn.disabled = true; } );
     }
 }
 

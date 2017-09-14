@@ -1,10 +1,18 @@
 import Fiber from 'fiber';
+import NameSpace from 'namespace';
+import Events from 'events';
 
 class CardHolderBaseComponent extends Fiber.UIComponent {
 
     init() {
         this.cards = [];
         this.score = 0;
+    }
+
+    listen() {
+        this.on(NameSpace.Cards).listen(
+            Events.Card.Cleanup, event => this.init()
+        );
     }
 
     addCard(card) {

@@ -13,7 +13,8 @@ class CardHandComponent extends Fiber.UIComponent {
 
     listen() {
         this.on(NameSpace.Cards).listen(
-            Events.Card.ServedFor(this.name), event => this.addCard(event.card)
+            Events.Card.ServedFor(this.name), event => this.addCard(event.card),
+            Events.Card.Cleanup, event => this.cleanup(),
         );
     }
 
@@ -21,6 +22,10 @@ class CardHandComponent extends Fiber.UIComponent {
         this.view.appendChild(
             CardGeneratorComponent.renderCard(card)
         );
+    }
+
+    cleanup() {
+        this.view.innerHTML = '';
     }
 }
 

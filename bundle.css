@@ -17,3 +17,14 @@ player {
       border-radius: 8px;
       background-color: #fefefe;
       width: 100px; }
+game-console {
+  display: block;
+  clear: both;
+  padding: 20px; }
+  game-console button {
+    margin-right: 20px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    background-color: #fefefe;
+    width: 100px; }

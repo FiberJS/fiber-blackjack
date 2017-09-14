@@ -11,6 +11,7 @@ GameSpace.defineState({
     ],
     scores : (state) => [
         Fiber.NameSpace.Defined, event => (state.scores = {}),
+        Events.Game.Reset, event => (state.scores = {}),
         Events.Game.ScoreUpdated, event => updateScore(event, state),
     ],
 });
