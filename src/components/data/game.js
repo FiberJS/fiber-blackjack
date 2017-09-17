@@ -1,6 +1,7 @@
 import Fiber from 'fiber';
 import NameSpace from 'namespace';
 import Events from 'events';
+import Flows from 'flows';
 import Card from 'domain/card';
 
 class GameComponent extends Fiber.DataComponent {
@@ -10,18 +11,28 @@ class GameComponent extends Fiber.DataComponent {
             Fiber.System.Ready, event => this.initGame(),
         );
         this.on(NameSpace.Game).listen(
-            Events.Game.Reset, event => this.initGame(),
+            Events.Game.New, event => this.initGame(),
             Events.Game.ScoreUpdated, event => this.checkScores(),
             Events.Game.EndOfRound, event => this.endOfRound(),
         );
     }
 
     initGame() {
-        this.on(NameSpace.Cards).triggerSequence(
-            new Events.Card.Cleanup(),
-            new Events.Card.Request('dealer', Card.Reversed),
-            new Events.Card.Request('dealer'),
-            new Events.Card.Request('player'),
+        this.on(NameSpace.Cards).trigger(
+            new Events.Card.Cleanup()
+        );
+
+        this.on(NameSpace.Cards).trigger(
+            new Events.Card.Request('dealer', Card.Reversed)
+        );
+        this.on(NameSpace.Cards).trigger(
+            new Events.Card.Request('dealer')
+        );
+
+        this.on(NameSpace.Cards).trigger(
+            new Events.Card.Request('player')
+        );
+        this.on(NameSpace.Cards).trigger(
             new Events.Card.Request('player')
         );
     }
@@ -44,13 +55,16 @@ class GameComponent extends Fiber.DataComponent {
 
     callDealerCard() {
         setTimeout(() => {
-            this.on(NameSpace.Cards).trigger(
+            this.on(
+                Flows.CardFor('dealer')
+            ).trigger(
                 new Events.Card.Request('dealer')
-            ).then( result => {
+            ).then( afterScoreUpdated => {
                 this.on(NameSpace.Game).trigger(
                     new Events.Game.EndOfRound()
                 );
-            })
+            });
+
         }, 500);
     }
 

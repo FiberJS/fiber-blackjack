@@ -1,11 +1,10 @@
 import Fiber from 'fiber';
 import NameSpace from 'namespace';
 import Events from 'events';
-import CardHolderBaseComponent from 'domain/card-holder';
 import CardGeneratorComponent from 'components/ui/card/card';
 import styles from './card-hand.scss';
 
-class CardHandComponent extends Fiber.UIComponent {
+class CardHolderComponent extends Fiber.UIComponent {
 
     init(name) {
         this.name = name;
@@ -16,17 +15,21 @@ class CardHandComponent extends Fiber.UIComponent {
             Events.Card.ServedFor(this.name), event => this.addCard(event.card),
             Events.Card.Cleanup, event => this.cleanup(),
         );
+
+        this.view.querySelector('.card-holder-name').innerHTML = this.name;
+        this.cardList = this.view.querySelector('cards');
     }
 
     addCard(card) {
-        this.view.appendChild(
+        this.cardList.appendChild(
             CardGeneratorComponent.renderCard(card)
         );
     }
 
     cleanup() {
-        this.view.innerHTML = '';
+        this.cardList.innerHTML = '';
     }
+
 }
 
-export default CardHandComponent;
+export default CardHolderComponent;

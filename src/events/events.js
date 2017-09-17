@@ -11,13 +11,9 @@ Events.Card.ServedFor = recipient => Fiber.defineEvent(CardEvent, `Card:ServedFo
 Events.Card.Cleanup = Fiber.basicEvent('Card:Cleanup');
 
 Events.Game = {};
-Events.Game.Reset = Fiber.basicEvent('Game:Reset');
+Events.Game.New = Fiber.basicEvent('Game:New');
 Events.Game.ScoreUpdated = Fiber.defineEvent(ScoreEvent, `Game:ScoreUpdated`);
 Events.Game.EndOfRound = Fiber.basicEvent('Game:EndOfRound');
 Events.Game.Over = Fiber.defineEvent(GameOverEvent, `Game:Over`);
-
-Events.Player = {};
-Events.Player.Joined = Fiber.defineEvent(PlayerEvent, 'Player:Joined');
-Events.Player.Left = Fiber.defineEvent(PlayerEvent, 'Player:Left');
 
 export default Events;

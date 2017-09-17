@@ -15,13 +15,13 @@ class DeckComponent extends Fiber.DataComponent {
 
     listen() {
         this.on(NameSpace.Cards).listen(
-            Events.Card.Request, event => this.serveCard(event.recipient, event.face)
+            Events.Card.Request, event => this.serveCard(event.recipient, event.face, event)
         );
     }
 
-    serveCard(recipient, face) {
+    serveCard(recipient, face, event) {
         const CardServedEvent = Events.Card.ServedFor(recipient);
-        this.on(NameSpace.Cards).trigger(
+        this.on(event.flow || NameSpace.Cards).trigger(
             new CardServedEvent(this.pullCard(face === Card.Reversed))
         );
     }
