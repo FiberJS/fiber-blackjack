@@ -9,8 +9,7 @@ import NameSpace from 'namespace';
 require('./app.scss');
 
 // Debugger
-// Fiber.Debugger.showEvents = true;
-// Fiber.Debugger.showView = true;
+Fiber.Debugger.showEvents = true;
 Fiber.Debugger.init();
 
 Fiber.app(() => {

@@ -53,6 +53,7 @@ module.exports = {
       components: path.resolve(__dirname, 'src/components'),
       domain: path.resolve(__dirname, 'src/domain'),
       events: path.resolve(__dirname, 'src/events/events'),
+      flows: path.resolve(__dirname, 'src/events/flows'),
       namespace: path.resolve(__dirname, 'src/namespace/namespace'),
     }
   },

@@ -12,11 +12,11 @@ class PlayerComponent extends CardHolderBaseComponent.withTemplate(playerTemplat
     listen() {
         super.listen();
         this.on(NameSpace.Cards).listen(
-            Events.Card.ServedFor('player'), event => this.update(event.card)
+            Events.Card.ServedFor('player'), event => this.update(event)
         );
         this.on(NameSpace.Game).listen(
-            Events.Game.Reset, event => this.reset(),
-            Events.Game.Over, event => this.gameOver(),
+            Events.Game.Reset, event => this.enableControls(),
+            Events.Game.Over, event => this.disableControls(),
         );
 
         this.ui('.hit').listen(
@@ -31,10 +31,10 @@ class PlayerComponent extends CardHolderBaseComponent.withTemplate(playerTemplat
         );
     }
 
-    update(card) {
-        this.addCard(card);
+    update(event) {
+        this.addCard(event.card);
         this.view.querySelector('.score').innerHTML = this.score;
-        this.on(NameSpace.Game).trigger(
+        this.on(event.flow || NameSpace.Game).trigger(
             new Events.Game.ScoreUpdated('player', this.score)
         );
     }
@@ -46,16 +46,17 @@ class PlayerComponent extends CardHolderBaseComponent.withTemplate(playerTemplat
     }
 
     stick() {
+        this.disableControls();
         this.on(NameSpace.Game).trigger(
             new Events.Game.EndOfRound()
         );
     }
 
-    reset() {
+    enableControls() {
         this.view.querySelectorAll('button').forEach( btn => { btn.disabled = false; } );
     }
 
-    gameOver() {
+    disableControls() {
         this.view.querySelectorAll('button').forEach( btn => { btn.disabled = true; } );
     }
 }

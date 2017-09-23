@@ -10,7 +10,7 @@ class DealerComponent extends CardHolderBaseComponent.withTemplate(dealerTemplat
     listen() {
         super.listen();
         this.on(NameSpace.Cards).listen(
-            Events.Card.ServedFor('dealer'), event => this.update(event.card),
+            Events.Card.ServedFor('dealer'), event => this.update(event),
         );
         this.on(NameSpace.Game).listen(
             Events.Game.EndOfRound, event => this.flipCard(),
@@ -22,9 +22,9 @@ class DealerComponent extends CardHolderBaseComponent.withTemplate(dealerTemplat
         );
     }
 
-    update(card) {
-        this.addCard(card);
-        this.on(NameSpace.Game).trigger(
+    update(event) {
+        this.addCard(event.card);
+        this.on(event.flow || NameSpace.Game).trigger(
             new Events.Game.ScoreUpdated('dealer', this.score)
         );
     }
