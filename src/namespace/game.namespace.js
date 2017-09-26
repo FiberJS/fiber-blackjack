@@ -14,6 +14,10 @@ GameSpace.defineState({
         Events.Game.Reset, event => (state.scores = {}),
         Events.Game.ScoreUpdated, event => updateScore(event, state),
     ],
+    risk : (state) => [
+        Fiber.NameSpace.Defined, event => (state.risk = 16),
+        Events.Game.RiskUpdated, event => (state.risk = event.risk),        
+    ],
 });
 
 function playerJoined(player, state) {

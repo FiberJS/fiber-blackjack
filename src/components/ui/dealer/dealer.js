@@ -16,6 +16,10 @@ class DealerComponent extends CardHolderBaseComponent.withTemplate(dealerTemplat
             Events.Game.EndOfRound, event => this.flipCard(),
         );
 
+        this.ui('[type=range]').listen(
+            'change', event => this.changeRisk(event),
+        );
+
         CardHandComponent.attachTo(
             this.view.querySelector('cards'),
             'dealer'
@@ -32,6 +36,12 @@ class DealerComponent extends CardHolderBaseComponent.withTemplate(dealerTemplat
     flipCard() {
         const card = this.view.querySelector('cards .back');
         card && (card.className = card.className.replace(/(back-|back)/g,''));
+    }
+
+    changeRisk(event) {
+        this.on(NameSpace.Game).trigger(
+            new Events.Game.RiskUpdated(event.target.value)
+        );
     }
 }
 

@@ -1,6 +1,6 @@
 import Fiber from 'fiber';
 import {
-  CardEvent, CardRequestEvent, PlayerEvent, ScoreEvent, GameOverEvent
+  CardEvent, CardRequestEvent, PlayerEvent, ScoreEvent, GameOverEvent, RiskEvent
 } from './event-types';
 
 const Events = {};
@@ -13,6 +13,7 @@ Events.Card.Cleanup = Fiber.basicEvent('Card:Cleanup');
 Events.Game = {};
 Events.Game.Reset = Fiber.basicEvent('Game:Reset');
 Events.Game.ScoreUpdated = Fiber.defineEvent(ScoreEvent, `Game:ScoreUpdated`);
+Events.Game.RiskUpdated = Fiber.defineEvent(RiskEvent, `Game:RiskUpdated`);
 Events.Game.EndOfRound = Fiber.basicEvent('Game:EndOfRound');
 Events.Game.Over = Fiber.defineEvent(GameOverEvent, `Game:Over`);
 

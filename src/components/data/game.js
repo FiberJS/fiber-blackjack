@@ -72,7 +72,7 @@ class GameComponent extends Fiber.DataComponent {
         const scores = NameSpace.Game.state.scores;
         const cards = NameSpace.Cards.state.cards;
 
-        if(scores.dealer < 16) {
+        if(scores.dealer < NameSpace.Game.state.risk) {
             return this.callDealerCard();
         }
         if(scores.dealer == 21 && cards.dealer == 2) {

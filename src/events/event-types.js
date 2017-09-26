@@ -25,3 +25,7 @@ export const GameOverEvent = Fiber.defineEventType({
     winner: String,
     message: String,
 });
+
+export const RiskEvent = Fiber.defineEventType({
+    risk: Number,
+});
