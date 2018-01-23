@@ -1145,6 +1145,7 @@ var SpeechComponent = function (_Fiber$DataComponent) {
         _this.cards = {};
         _this.reversed = null;
         _this.roundsCompleted = 0;
+        _this.gameOver = false;
         return _this;
     }
 
@@ -1173,6 +1174,7 @@ var SpeechComponent = function (_Fiber$DataComponent) {
         key: 'clearCards',
         value: function clearCards() {
             this.cards = {};
+            this.gameOver = false;
         }
     }, {
         key: 'endOfRound',
@@ -1188,6 +1190,7 @@ var SpeechComponent = function (_Fiber$DataComponent) {
             var winner = _ref.winner,
                 message = _ref.message;
 
+            this.gameOver = true;
             if (winner == 'player') {
                 this.say('You won with ' + _namespace2.default.Game.state.scores['player'] + ' points against ' + _namespace2.default.Game.state.scores['dealer'], 1, 1.3);
             } else {
@@ -1207,7 +1210,7 @@ var SpeechComponent = function (_Fiber$DataComponent) {
 
             if (name == 'player' && this.cards[name] && this.cards[name].length > 1) {
                 this.shout(this.describeCard(card)).then(function () {
-                    return _this3.say('you have ' + _namespace2.default.Game.state.scores['player'] + ' points');
+                    return _this3.gameOver || _this3.shout('you have ' + _namespace2.default.Game.state.scores['player'] + ' points');
                 });
             } else if (name == 'dealer' && this.cards[name]) {
                 this.shout(this.describeCard(card));

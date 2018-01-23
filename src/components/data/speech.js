@@ -10,6 +10,7 @@ class SpeechComponent extends Fiber.DataComponent {
         this.cards = {};
         this.reversed = null;
         this.roundsCompleted = 0;
+        this.gameOver = false;
     }
 
     listen() {
@@ -30,6 +31,7 @@ class SpeechComponent extends Fiber.DataComponent {
 
     clearCards() {
         this.cards = {};
+        this.gameOver = false;
     }
 
     endOfRound() {
@@ -40,6 +42,7 @@ class SpeechComponent extends Fiber.DataComponent {
     }
 
     sayOver({winner, message}) {
+        this.gameOver = true;
         if(winner == 'player') {
             this.say(
                 'You won with '
@@ -64,7 +67,7 @@ class SpeechComponent extends Fiber.DataComponent {
 
         if(name == 'player' && this.cards[name] && this.cards[name].length > 1) {
             this.shout(this.describeCard(card)).then(
-                () => this.say('you have ' + NameSpace.Game.state.scores['player'] + ' points')
+                () => this.gameOver || this.shout('you have ' + NameSpace.Game.state.scores['player'] + ' points')
             );
         } else if(name == 'dealer' && this.cards[name]) {
             this.shout(this.describeCard(card));
