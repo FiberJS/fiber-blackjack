@@ -35,6 +35,10 @@ class GameComponent extends Fiber.DataComponent {
         this.on(NameSpace.Cards).trigger(
             new Events.Card.Request('player')
         );
+
+        this.on(NameSpace.Game).trigger(
+            new Events.Game.Initialized()
+        );
     }
 
     checkScores() {
@@ -48,7 +52,7 @@ class GameComponent extends Fiber.DataComponent {
         }
         else if(scores.player > 21) {
             this.on(NameSpace.Game).trigger(
-                new Events.Game.Over("dealer", "Over stretched there a bit")
+                new Events.Game.Over("dealer", "Overstretched there a bit.")
             );
         }
     }
@@ -81,11 +85,11 @@ class GameComponent extends Fiber.DataComponent {
             );
         } else if(scores.dealer > 21) {
             this.on(NameSpace.Game).trigger(
-                new Events.Game.Over("player", "Dealer was unlucky :)")
+                new Events.Game.Over("player", "Dealer was unlucky.")
             );
         } else if(scores.player > 21) {
             this.on(NameSpace.Game).trigger(
-                new Events.Game.Over("dealer", "Over stretched there a bit")
+                new Events.Game.Over("dealer", "Overstretched there a bit.")
             );
         } else if(scores.player >= scores.dealer){
             this.on(NameSpace.Game).trigger(

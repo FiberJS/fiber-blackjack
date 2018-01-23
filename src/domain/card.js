@@ -1,3 +1,9 @@
+const symbols = {
+    diams  : '♦',
+    hearts : '♥',
+    spades : '♠',
+    clubs  : '♣'
+};
 
 class Card {
     constructor(card) {
@@ -20,10 +26,3 @@ class Card {
 Card.Reversed = 'reversed';
 
 export default Card;
-
-const symbols = {
-    diams  : '♦',
-    hearts : '♥',
-    spades : '♠',
-    clubs  : '♣'
-};
