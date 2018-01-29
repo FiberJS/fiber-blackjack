@@ -7,12 +7,13 @@ CardSpace.defineState({
     cards : (state) => [
         Fiber.NameSpace.Defined, event => (state.cards = {}),
         Events.Card.Cleanup, event => (state.cards = {}),
-        Events.Card.Request, event => updateCards(event.recipient, state),
+        Events.Card.ServedFor('player'), ({card}) => updateCards('player', card, state),
+        Events.Card.ServedFor('dealer'), ({card}) => updateCards('dealer', card, state),
     ],
 });
 
-function updateCards(recipient, state) {
-    state.cards[recipient] = 1 + (state.cards[recipient] || 0);
+function updateCards(recipient, card, state) {
+    (state.cards[recipient] || (state.cards[recipient] = [])).push(card);
 }
 
 export default CardSpace;

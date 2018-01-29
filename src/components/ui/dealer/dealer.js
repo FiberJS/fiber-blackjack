@@ -17,7 +17,7 @@ class DealerComponent extends CardHolderBaseComponent.withTemplate(dealerTemplat
         );
 
         this.ui('[type=range]').listen(
-            'change', event => this.changeRisk(event),
+            'change', event => this.changeRisk(event.target),
         );
 
         CardHandComponent.attachTo(
@@ -26,9 +26,9 @@ class DealerComponent extends CardHolderBaseComponent.withTemplate(dealerTemplat
         );
     }
 
-    update(event) {
-        this.addCard(event.card);
-        this.on(event.flow || NameSpace.Game).trigger(
+    update({ card, flow }) {
+        this.addCard(card);
+        this.on(flow || NameSpace.Game).trigger(
             new Events.Game.ScoreUpdated('dealer', this.score)
         );
     }
@@ -38,9 +38,9 @@ class DealerComponent extends CardHolderBaseComponent.withTemplate(dealerTemplat
         card && (card.className = card.className.replace(/(back-|back)/g,''));
     }
 
-    changeRisk(event) {
+    changeRisk({ value }) {
         this.on(NameSpace.Game).trigger(
-            new Events.Game.RiskUpdated(event.target.value)
+            new Events.Game.RiskUpdated(value)
         );
     }
 }

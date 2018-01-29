@@ -1,124 +1,94 @@
 import Fiber from 'fiber';
 import NameSpace from 'namespace';
 import Events from 'events';
+import Flows from 'flows';
+
+const commands = [
+    {
+        regex: /hit|(new|another).+card/,
+        namespace: Flows.CardFor('player'),
+        event: () => new Events.Card.Request('player')
+    },
+    {
+        regex: /stick|stay/,
+        namespace: NameSpace.Game,
+        event: () => new Events.Game.EndOfRound()
+    },
+    {
+        regex: /new.+(game|one|round)/,
+        namespace: NameSpace.Game,
+        event: () => new Events.Game.Reset()
+    },
+    {
+        regex: /my.+score/,
+        namespace: NameSpace.Speech,
+        event: () => new Events.Speech.TellScore()
+    },
+];
 
 class SpeechComponent extends Fiber.DataComponent {
+
     constructor() {
         super();
 
-        this.synth = window.speechSynthesis;
-        this.cards = {};
-        this.reversed = null;
-        this.roundsCompleted = 0;
-        this.gameOver = false;
+        this.recognition = new (webkitSpeechRecognition || SpeechRecognition)();
+
+        this.recognition.continuous = true;
+        this.recognition.interimResults = false;
+
+        this.recognition.onresult = event => this.onCommand(event);
+
+        this.listening = false;
+        this.recognition.onend = () => {
+            if(this.listening) {
+                this.start();
+            }
+        };
     }
 
     listen() {
-        this.on(NameSpace.Cards).listen(
-            Events.Card.Cleanup, event => this.clearCards(),
-
-            Events.Card.ServedFor('player'), event => this.addCard('player', event.card),
-
-            Events.Card.ServedFor('dealer'), event => this.addCard('dealer', event.card),
-        );
-
-        this.on(NameSpace.Game).listen(
-            Events.Game.Initialized, event => this.sayCards(),
-            Events.Game.Over, event => this.sayOver(event),
-            Events.Game.EndOfRound, event => this.endOfRound(),
+        this.on(NameSpace.Speech).listen(
+            Events.Speech.Listening, event => this.start(),
+            Events.Speech.Speaking, event => this.stop(),
         );
     }
 
-    clearCards() {
-        this.cards = {};
-        this.gameOver = false;
+    start() {
+        console.log('♪ listening');
+        this.listening = true;
+        this.recognition.start();
     }
 
-    endOfRound() {
-        if(this.reversed) {
-            this.addCard('dealer', this.reversed.flip());
-            this.reversed = null;
+    stop() {
+        console.log('♪ speaking');
+        this.listening = false;
+        this.recognition.stop();
+    }
+
+    onCommand(speechEvent) {
+        const { results, resultIndex } = speechEvent;
+        const voiceCommand = results[resultIndex][0].transcript.toLowerCase();
+
+        console.log(voiceCommand);
+
+        let understood = false;
+        for(let cmd of commands) {
+            if(cmd.regex.test(voiceCommand)) {
+                console.log('heard command', cmd.regex.toString());
+                this.on(cmd.namespace).trigger(
+                    cmd.event()
+                );
+                understood = true;
+                break;
+            }
         }
-    }
 
-    sayOver({winner, message}) {
-        this.gameOver = true;
-        if(winner == 'player') {
-            this.say(
-                'You won with '
-                + NameSpace.Game.state.scores['player'] + ' points against '
-                + NameSpace.Game.state.scores['dealer']
-            , 1, 1.3);
-        } else {
-            this.say(
-                'Dealer wins this round with '
-                + NameSpace.Game.state.scores['dealer'] + ' points against your '
-                + NameSpace.Game.state.scores['player']
+        if(!understood) {
+            this.on(NameSpace.Speech).trigger(
+                new Events.Speech.Say("didn't catch that")
             );
         }
-        this.say(message);
     }
-
-    addCard(name, card) {
-        if(card.reversed) {
-            this.reversed = card;
-            return;
-        }
-
-        if(name == 'player' && this.cards[name] && this.cards[name].length > 1) {
-            this.shout(this.describeCard(card)).then(
-                () => this.gameOver || this.shout('you have ' + NameSpace.Game.state.scores['player'] + ' points')
-            );
-        } else if(name == 'dealer' && this.cards[name]) {
-            this.shout(this.describeCard(card));
-        }
-
-        (this.cards[name] || (this.cards[name] = [])).push(card);
-    }
-
-    sayCards() {
-        this.say('Dealer has ' + this.describeCard(this.cards.dealer[0]));
-        this.say(
-            'And You have ' + this.describeCard(this.cards.player[0]) + ' and '
-            + this.describeCard(this.cards.player[1])
-            + ' giving you ' + NameSpace.Game.state.scores['player'] + ' points'
-        );
-
-        if(!this.roundsCompleted++) {
-            this.say('Say "hit" to get a new card or  "stick" to end the round');
-        }
-    }
-
-    describeCard(card) {
-        if(card.reversed) {
-            return 'a card face down';
-        }
-
-        const rankNames = {
-            j: 'jack', q: 'queen', k: 'king', a: 'ace'
-        };
-
-        if(card.suit == 'diams') {
-            card.suit = 'diamonds';
-        }
-
-        return (rankNames[card.rank] || card.rank) + ' of ' + card.suit;
-    }
-
-    say(txt, rate = 1.2, volume = 1) {
-        return new Promise((resolve, reject) => {
-            var sense = new SpeechSynthesisUtterance(txt);
-            sense.rate = rate;
-            sense.volume = volume;
-            sense.onend = resolve();
-            this.synth.speak(sense);
-        });
-    }
-
-    shout(txt) {
-        return this.say(txt, 1.5, 1.3);
-    }
-
 }
 
 export default SpeechComponent;

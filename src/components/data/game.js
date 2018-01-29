@@ -22,22 +22,18 @@ class GameComponent extends Fiber.DataComponent {
             new Events.Card.Cleanup()
         );
 
-        this.on(NameSpace.Cards).trigger(
+        this.on(Flows.CardFor('dealer')).trigger(
             new Events.Card.Request('dealer', Card.Reversed)
         );
-        this.on(NameSpace.Cards).trigger(
+        this.on(Flows.CardFor('dealer')).trigger(
             new Events.Card.Request('dealer')
         );
 
-        this.on(NameSpace.Cards).trigger(
+        this.on(Flows.CardFor('player')).trigger(
             new Events.Card.Request('player')
         );
-        this.on(NameSpace.Cards).trigger(
+        this.on(Flows.CardFor('player')).trigger(
             new Events.Card.Request('player')
-        );
-
-        this.on(NameSpace.Game).trigger(
-            new Events.Game.Initialized()
         );
     }
 
@@ -45,14 +41,14 @@ class GameComponent extends Fiber.DataComponent {
         const scores = NameSpace.Game.state.scores;
         const cards = NameSpace.Cards.state.cards;
 
-        if(scores.player == 21 && cards.player == 2) {
+        if(scores.player == 21 && cards.player.length == 2) {
             this.on(NameSpace.Game).trigger(
                 new Events.Game.Over("player", "BlackJack!!!!")
             );
         }
         else if(scores.player > 21) {
             this.on(NameSpace.Game).trigger(
-                new Events.Game.Over("dealer", "Overstretched there a bit.")
+                new Events.Game.Over("dealer", "Better luck next time!")
             );
         }
     }
@@ -79,7 +75,7 @@ class GameComponent extends Fiber.DataComponent {
         if(scores.dealer < NameSpace.Game.state.risk) {
             return this.callDealerCard();
         }
-        if(scores.dealer == 21 && cards.dealer == 2) {
+        if(scores.dealer == 21 && cards.dealer.length == 2) {
             this.on(NameSpace.Game).trigger(
                 new Events.Game.Over("dealer", "Oops...")
             );
@@ -89,7 +85,7 @@ class GameComponent extends Fiber.DataComponent {
             );
         } else if(scores.player > 21) {
             this.on(NameSpace.Game).trigger(
-                new Events.Game.Over("dealer", "Overstretched there a bit.")
+                new Events.Game.Over("dealer", "Better luck next time!")
             );
         } else if(scores.player >= scores.dealer){
             this.on(NameSpace.Game).trigger(

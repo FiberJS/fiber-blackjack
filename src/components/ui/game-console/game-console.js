@@ -9,7 +9,8 @@ class GameConsoleComponent extends Fiber.UIComponent.withTemplate(gameTemplate) 
 
     listen() {
         this.on(NameSpace.Game).listen(
-            Events.Game.Over, event => this.gameOver(event.winner, event.message),
+            Events.Game.Reset, event => this.show(''),
+            Events.Game.Over, event => this.show(event.message),
         );
 
         this.ui('.reset').listen(
@@ -18,13 +19,12 @@ class GameConsoleComponent extends Fiber.UIComponent.withTemplate(gameTemplate) 
     }
 
     newGame() {
-        this.view.querySelector('message').innerHTML = "";
         this.on(NameSpace.Game).trigger(
             new Events.Game.Reset()
         );
     }
 
-    gameOver(winner, message) {
+    show(message) {
         this.view.querySelector('message').innerHTML = message;
     }
 }

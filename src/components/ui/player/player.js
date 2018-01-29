@@ -1,6 +1,7 @@
 import Fiber from 'fiber';
 import NameSpace from 'namespace';
 import Events from 'events';
+import Flows from 'flows';
 import CardHolderBaseComponent from 'domain/card-holder';
 import CardHandComponent from 'components/ui/card-hand/card-hand.js';
 import playerTemplate from './player.html';
@@ -31,16 +32,16 @@ class PlayerComponent extends CardHolderBaseComponent.withTemplate(playerTemplat
         );
     }
 
-    update(event) {
-        this.addCard(event.card);
+    update({card, flow}) {
+        this.addCard(card);
         this.view.querySelector('.score').innerHTML = this.score;
-        this.on(event.flow || NameSpace.Game).trigger(
+        this.on(flow || NameSpace.Game).trigger(
             new Events.Game.ScoreUpdated('player', this.score)
         );
     }
 
     hit() {
-        this.on(NameSpace.Cards).trigger(
+        this.on(Flows.CardFor('player')).trigger(
             new Events.Card.Request('player')
         );
     }

@@ -1,6 +1,6 @@
 import Fiber from 'fiber';
 import {
-  CardEvent, CardRequestEvent, PlayerEvent, ScoreEvent, GameOverEvent, RiskEvent
+  CardEvent, CardRequestEvent, PlayerEvent, ScoreEvent, GameOverEvent, RiskEvent, SpeechEvent
 } from './event-types';
 
 const Events = {};
@@ -21,5 +21,12 @@ Events.Game.Over = Fiber.defineEvent(GameOverEvent, `Game:Over`);
 Events.Player = {};
 Events.Player.Joined = Fiber.defineEvent(PlayerEvent, 'Player:Joined');
 Events.Player.Left = Fiber.defineEvent(PlayerEvent, 'Player:Left');
+
+Events.Speech = {};
+Events.Speech.Listening = Fiber.basicEvent('Speech:Listening');
+Events.Speech.Speaking = Fiber.basicEvent('Speech:Speaking');
+Events.Speech.Say = Fiber.defineEvent(SpeechEvent, 'Speech:Say');
+Events.Speech.TellScore = Fiber.basicEvent('Speech:TellScore');
+
 
 export default Events;

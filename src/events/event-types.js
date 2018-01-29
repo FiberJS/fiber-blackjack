@@ -29,3 +29,7 @@ export const GameOverEvent = Fiber.defineEventType({
 export const RiskEvent = Fiber.defineEventType({
     risk: Number,
 });
+
+export const SpeechEvent = Fiber.defineEventType({
+    transcript: String,
+});
