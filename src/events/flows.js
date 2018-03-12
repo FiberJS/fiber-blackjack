@@ -12,6 +12,10 @@ Flows.CardFor = (recipient) => $CardFor[recipient] || ($CardFor[recipient] = Fib
     Events.Game.ScoreUpdated.on(NameSpace.Game),
 ));
 
+Flows.Confirm = (Action) => Fiber.EventFlow.define(
+    Events.Speech.Say.on(NameSpace.Speech),
+    Action
+);
 // Flows.Playoff = Fiber.EventFlow.define(
 //     Events.Game.EndOfRound.on(NameSpace.Game),
 //     Optional(

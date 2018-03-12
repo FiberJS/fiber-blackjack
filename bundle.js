@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -84,7 +84,7 @@ var _fiber = __webpack_require__(0);
 
 var _fiber2 = _interopRequireDefault(_fiber);
 
-var _eventTypes = __webpack_require__(10);
+var _eventTypes = __webpack_require__(11);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -132,11 +132,11 @@ var _fiber = __webpack_require__(0);
 
 var _fiber2 = _interopRequireDefault(_fiber);
 
-var _game = __webpack_require__(9);
+var _game = __webpack_require__(10);
 
 var _game2 = _interopRequireDefault(_game);
 
-var _cards = __webpack_require__(13);
+var _cards = __webpack_require__(14);
 
 var _cards2 = _interopRequireDefault(_cards);
 
@@ -235,6 +235,9 @@ Flows.CardFor = function (recipient) {
     return $CardFor[recipient] || ($CardFor[recipient] = _fiber2.default.EventFlow.define(_events2.default.Card.Request.on(_namespace2.default.Cards), _events2.default.Card.ServedFor(recipient).on(_namespace2.default.Cards), _events2.default.Game.ScoreUpdated.on(_namespace2.default.Game)));
 };
 
+Flows.Confirm = function (Action) {
+    return _fiber2.default.EventFlow.define(_events2.default.Speech.Say.on(_namespace2.default.Speech), Action);
+};
 // Flows.Playoff = Fiber.EventFlow.define(
 //     Events.Game.EndOfRound.on(NameSpace.Game),
 //     Optional(
@@ -396,11 +399,11 @@ var _cardHolder = __webpack_require__(5);
 
 var _cardHolder2 = _interopRequireDefault(_cardHolder);
 
-var _card = __webpack_require__(16);
+var _card = __webpack_require__(17);
 
 var _card2 = _interopRequireDefault(_card);
 
-var _cardHand = __webpack_require__(20);
+var _cardHand = __webpack_require__(21);
 
 var _cardHand2 = _interopRequireDefault(_cardHand);
 
@@ -461,35 +464,425 @@ exports.default = CardHandComponent;
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function reset(str) {
+    return str.toLowerCase().replace(/\s+/, ' ').trim();
+}
+
+var VoicePattern = function () {
+    function VoicePattern() {
+        _classCallCheck(this, VoicePattern);
+    }
+
+    _createClass(VoicePattern, [{
+        key: 'match',
+        value: function match(text) {
+            return false;
+        }
+    }, {
+        key: 'signiture',
+        value: function signiture() {
+            return this.signiture;
+        }
+    }]);
+
+    return VoicePattern;
+}();
+
+var $AllOf = function (_VoicePattern) {
+    _inherits($AllOf, _VoicePattern);
+
+    function $AllOf() {
+        _classCallCheck(this, $AllOf);
+
+        var _this = _possibleConstructorReturn(this, ($AllOf.__proto__ || Object.getPrototypeOf($AllOf)).call(this));
+
+        for (var _len = arguments.length, words = Array(_len), _key = 0; _key < _len; _key++) {
+            words[_key] = arguments[_key];
+        }
+
+        _this.words = words.map(function (str) {
+            return reset(str);
+        }).sort();
+
+        _this.signiture = "All:" + _this.words.join('+');
+        return _this;
+    }
+
+    _createClass($AllOf, [{
+        key: 'match',
+        value: function match(text) {
+            text = reset(text).split(/\s+/);
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = this.words[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var word = _step.value;
+
+                    if (text.indexOf(word) < 0) {
+                        return false;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            return true;
+        }
+    }]);
+
+    return $AllOf;
+}(VoicePattern);
+
+var AllOf = exports.AllOf = function AllOf() {
+    for (var _len2 = arguments.length, words = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        words[_key2] = arguments[_key2];
+    }
+
+    return new (Function.prototype.bind.apply($AllOf, [null].concat(words)))();
+};
+
+var $AnyOf = function (_VoicePattern2) {
+    _inherits($AnyOf, _VoicePattern2);
+
+    function $AnyOf() {
+        _classCallCheck(this, $AnyOf);
+
+        var _this2 = _possibleConstructorReturn(this, ($AnyOf.__proto__ || Object.getPrototypeOf($AnyOf)).call(this));
+
+        for (var _len3 = arguments.length, words = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+            words[_key3] = arguments[_key3];
+        }
+
+        _this2.words = words.map(function (str) {
+            return reset(str);
+        }).sort();
+
+        _this2.signiture = "Any:" + _this2.words.join('+');
+        return _this2;
+    }
+
+    _createClass($AnyOf, [{
+        key: 'match',
+        value: function match(text) {
+            text = reset(text).split(/\s+/);
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = this.words[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var word = _step2.value;
+
+                    if (text.indexOf(word) >= 0) {
+                        return true;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+
+            return false;
+        }
+    }]);
+
+    return $AnyOf;
+}(VoicePattern);
+
+var AnyOf = exports.AnyOf = function AnyOf() {
+    for (var _len4 = arguments.length, words = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        words[_key4] = arguments[_key4];
+    }
+
+    return new (Function.prototype.bind.apply($AnyOf, [null].concat(words)))();
+};
+
+var FullSentence = exports.FullSentence = function (_VoicePattern3) {
+    _inherits(FullSentence, _VoicePattern3);
+
+    function FullSentence(sentence) {
+        _classCallCheck(this, FullSentence);
+
+        var _this3 = _possibleConstructorReturn(this, (FullSentence.__proto__ || Object.getPrototypeOf(FullSentence)).call(this));
+
+        _this3.sentence = reset(sentence);
+
+        _this3.signiture = "F:" + sentence;
+        return _this3;
+    }
+
+    _createClass(FullSentence, [{
+        key: 'match',
+        value: function match(text) {
+            return reset(text) == this.sentence;
+        }
+    }]);
+
+    return FullSentence;
+}(VoicePattern);
+
+var Command = function () {
+    function Command(action, patterns) {
+        _classCallCheck(this, Command);
+
+        this.patterns = patterns.slice() || [];
+
+        this.action = action;
+    }
+
+    _createClass(Command, [{
+        key: 'addAlternatives',
+        value: function addAlternatives(input) {
+            var _this4 = this;
+
+            (input instanceof Array ? input : [input]).forEach(function (alternative) {
+                _this4.patterns.push(alternative instanceof VoicePattern ? alternative : new FullSentence(alternative));
+            });
+        }
+    }, {
+        key: 'match',
+        value: function match(text) {
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
+
+            try {
+                for (var _iterator3 = this.patterns[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var pattern = _step3.value;
+
+                    if (pattern.match(text)) {
+                        return true;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
+                    }
+                } finally {
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
+                    }
+                }
+            }
+
+            return false;
+        }
+    }]);
+
+    return Command;
+}();
+
+var CommandListener = exports.CommandListener = function () {
+    function CommandListener() {
+        _classCallCheck(this, CommandListener);
+
+        this.commands = [];
+        this.onActions = {};
+
+        this.fuzzy = [];
+        // window.setInterval(()=>this.fuzzy.length && console.log(this.fuzzy.shift()), 10000);
+
+        var alternatives = [];
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
+
+        try {
+            for (var _iterator4 = this.constructor.commandParams[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                var param = _step4.value;
+
+                if (param instanceof VoicePattern) {
+                    alternatives.push(param);
+                } else {
+                    this.commands.push(new Command(param, alternatives));
+                }
+            }
+        } catch (err) {
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                    _iterator4.return();
+                }
+            } finally {
+                if (_didIteratorError4) {
+                    throw _iteratorError4;
+                }
+            }
+        }
+
+        for (var _len5 = arguments.length, instanceParams = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+            instanceParams[_key5] = arguments[_key5];
+        }
+
+        for (var i = 0; i < instanceParams.length; i += 2) {
+            this.onActions[instanceParams[i]] = instanceParams[i + 1];
+        }
+    }
+
+    _createClass(CommandListener, [{
+        key: 'input',
+        value: function input(speechEvent) {
+            var results = speechEvent.results,
+                resultIndex = speechEvent.resultIndex;
+
+            var voiceCommand = results[resultIndex][0].transcript.toLowerCase();
+
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
+
+            try {
+                for (var _iterator5 = this.commands[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    var cmd = _step5.value;
+
+                    if (cmd.match(voiceCommand)) {
+
+                        if (this.onActions[cmd.action]) {
+                            this.onActions[cmd.action]();
+                        }
+
+                        if (this.fuzzy.length) {
+                            console.log('adding alternatives', this.fuzzy, cmd.action);
+
+                            cmd.addAlternatives(this.fuzzy);
+                            this.fuzzy.splice(0, this.fuzzy.length);
+                        }
+
+                        return cmd.action;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
+                    }
+                } finally {
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
+                    }
+                }
+            }
+
+            this.fuzzy.push(voiceCommand);
+            console.log(this.fuzzy);
+
+            return false;
+        }
+    }, {
+        key: 'reset',
+        value: function reset() {
+            while (this.fuzzy.length) {
+                this.fuzzy.pop();
+            }
+        }
+    }], [{
+        key: 'withCommands',
+        value: function withCommands() {
+            var Listener = function (_CommandListener) {
+                _inherits(Listener, _CommandListener);
+
+                function Listener() {
+                    _classCallCheck(this, Listener);
+
+                    return _possibleConstructorReturn(this, (Listener.__proto__ || Object.getPrototypeOf(Listener)).apply(this, arguments));
+                }
+
+                return Listener;
+            }(CommandListener);
+
+            for (var _len6 = arguments.length, commands = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+                commands[_key6] = arguments[_key6];
+            }
+
+            Listener.commandParams = commands;
+
+            return Listener;
+        }
+    }]);
+
+    return CommandListener;
+}();
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _fiberFramework = __webpack_require__(0);
 
 var _fiberFramework2 = _interopRequireDefault(_fiberFramework);
 
-var _deck = __webpack_require__(8);
+var _deck = __webpack_require__(9);
 
 var _deck2 = _interopRequireDefault(_deck);
 
-var _game = __webpack_require__(14);
+var _game = __webpack_require__(15);
 
 var _game2 = _interopRequireDefault(_game);
 
-var _dealer = __webpack_require__(15);
+var _dealer = __webpack_require__(16);
 
 var _dealer2 = _interopRequireDefault(_dealer);
 
-var _player = __webpack_require__(22);
+var _player = __webpack_require__(23);
 
 var _player2 = _interopRequireDefault(_player);
 
-var _gameConsole = __webpack_require__(25);
+var _gameConsole = __webpack_require__(26);
 
 var _gameConsole2 = _interopRequireDefault(_gameConsole);
 
-var _commentator = __webpack_require__(28);
+var _commentator = __webpack_require__(29);
 
 var _commentator2 = _interopRequireDefault(_commentator);
 
-var _speech = __webpack_require__(30);
+var _speech = __webpack_require__(31);
 
 var _speech2 = _interopRequireDefault(_speech);
 
@@ -507,7 +900,7 @@ var _events2 = _interopRequireDefault(_events);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-__webpack_require__(31);
+__webpack_require__(34);
 
 // Debugger
 // Fiber.Debugger.showEvents = true;
@@ -534,7 +927,7 @@ window.deal = function (recipient, reversed) {
 };
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -673,7 +1066,7 @@ var DeckComponent = function (_Fiber$DataComponent) {
 exports.default = DeckComponent;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -740,7 +1133,7 @@ function updateScore(scoreEvent, state) {
 exports.default = GameSpace;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -755,13 +1148,13 @@ var _fiber = __webpack_require__(0);
 
 var _fiber2 = _interopRequireDefault(_fiber);
 
-var _domain = __webpack_require__(11);
+var _domain = __webpack_require__(12);
 
 var _card = __webpack_require__(3);
 
 var _card2 = _interopRequireDefault(_card);
 
-var _player = __webpack_require__(12);
+var _player = __webpack_require__(13);
 
 var _player2 = _interopRequireDefault(_player);
 
@@ -799,7 +1192,7 @@ var SpeechEvent = exports.SpeechEvent = _fiber2.default.defineEventType({
 });
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -906,7 +1299,7 @@ var Mixed = exports.Mixed = function Mixed() {
 });
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -952,7 +1345,7 @@ Player.Types = {
 exports.default = Player;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -997,7 +1390,7 @@ function updateCards(recipient, card, state) {
 exports.default = CardSpace;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1125,7 +1518,7 @@ var GameComponent = function (_Fiber$DataComponent) {
 exports.default = GameComponent;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1159,7 +1552,7 @@ var _cardHand = __webpack_require__(6);
 
 var _cardHand2 = _interopRequireDefault(_cardHand);
 
-var _dealer = __webpack_require__(21);
+var _dealer = __webpack_require__(22);
 
 var _dealer2 = _interopRequireDefault(_dealer);
 
@@ -1229,7 +1622,7 @@ var DealerComponent = function (_CardHolderBaseCompon) {
 exports.default = DealerComponent;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1245,15 +1638,15 @@ var _fiber = __webpack_require__(0);
 
 var _fiber2 = _interopRequireDefault(_fiber);
 
-var _card = __webpack_require__(17);
+var _card = __webpack_require__(18);
 
 var _card2 = _interopRequireDefault(_card);
 
-var _card3 = __webpack_require__(18);
+var _card3 = __webpack_require__(19);
 
 var _card4 = _interopRequireDefault(_card3);
 
-var _PatchIt = __webpack_require__(19);
+var _PatchIt = __webpack_require__(20);
 
 var _PatchIt2 = _interopRequireDefault(_PatchIt);
 
@@ -1289,13 +1682,13 @@ var CardGeneratorComponent = function (_Fiber$UIComponent$wi) {
 exports.default = CardGeneratorComponent;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = "<card var=\"card\" class=\"card\">\n    <span class=\"rank\" var=\"rank\"></span>\n    <span class=\"suit\" var=\"suit\"></span>\n</card>\n";
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1324,7 +1717,7 @@ var cardPatch = function cardPatch(view) {
 exports.default = cardPatch;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1462,19 +1855,19 @@ function clone(obj) {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = "<h2>Dealer <input type=\"range\" min=\"10\" max=\"20\" list=\"tickmarks\" value=\"16\" title=\"risk\"> </h2>\n<cards></cards>\n<datalist id=\"tickmarks\">\n    <option value=\"10\" label=\"10\">\n    <option value=\"11\">\n    <option value=\"12\">\n    <option value=\"13\">\n    <option value=\"14\">\n    <option value=\"15\">\n    <option value=\"16\">\n    <option value=\"17\">\n    <option value=\"18\">\n    <option value=\"19\">\n    <option value=\"20\" label=\"20\">\n</datalist>\n";
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1512,11 +1905,11 @@ var _cardHand = __webpack_require__(6);
 
 var _cardHand2 = _interopRequireDefault(_cardHand);
 
-var _player = __webpack_require__(23);
+var _player = __webpack_require__(24);
 
 var _player2 = _interopRequireDefault(_player);
 
-var _player3 = __webpack_require__(24);
+var _player3 = __webpack_require__(25);
 
 var _player4 = _interopRequireDefault(_player3);
 
@@ -1604,19 +1997,19 @@ var PlayerComponent = function (_CardHolderBaseCompon) {
 exports.default = PlayerComponent;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 module.exports = "<h2>Playa : <span class=\"score\"></span></h2>\n<cards></cards>\n<controls>\n    <button class=\"hit\">Hit</button>\n    <button class=\"stick\">Stick</button>\n</controls>\n";
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1640,11 +2033,11 @@ var _events = __webpack_require__(1);
 
 var _events2 = _interopRequireDefault(_events);
 
-var _gameConsole = __webpack_require__(26);
+var _gameConsole = __webpack_require__(27);
 
 var _gameConsole2 = _interopRequireDefault(_gameConsole);
 
-var _gameConsole3 = __webpack_require__(27);
+var _gameConsole3 = __webpack_require__(28);
 
 var _gameConsole4 = _interopRequireDefault(_gameConsole3);
 
@@ -1698,19 +2091,19 @@ var GameConsoleComponent = function (_Fiber$UIComponent$wi) {
 exports.default = GameConsoleComponent;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports) {
 
 module.exports = "<game-console>\n  <button class=\"reset\">New Game</button>\n  <message></message>\n</game-console>\n";
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1918,10 +2311,10 @@ var CommentatorComponent = function (_Fiber$DataComponent) {
 }(_fiber2.default.DataComponent);
 
 exports.default = CommentatorComponent;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(29)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(30)))
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports) {
 
 var g;
@@ -1948,7 +2341,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1976,6 +2369,10 @@ var _flows = __webpack_require__(4);
 
 var _flows2 = _interopRequireDefault(_flows);
 
+var _inGame = __webpack_require__(32);
+
+var _outGame = __webpack_require__(33);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1983,32 +2380,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var commands = [{
-    regex: /hit|(new|another).+card/,
-    namespace: _flows2.default.CardFor('player'),
-    event: function event() {
-        return new _events2.default.Card.Request('player');
-    }
-}, {
-    regex: /stick|stay/,
-    namespace: _namespace2.default.Game,
-    event: function event() {
-        return new _events2.default.Game.EndOfRound();
-    }
-}, {
-    regex: /new.+(game|one|round)/,
-    namespace: _namespace2.default.Game,
-    event: function event() {
-        return new _events2.default.Game.Reset();
-    }
-}, {
-    regex: /my.+score/,
-    namespace: _namespace2.default.Speech,
-    event: function event() {
-        return new _events2.default.Speech.TellScore();
-    }
-}];
 
 var SpeechComponent = function (_Fiber$DataComponent) {
     _inherits(SpeechComponent, _Fiber$DataComponent);
@@ -2033,6 +2404,30 @@ var SpeechComponent = function (_Fiber$DataComponent) {
                 _this.start();
             }
         };
+
+        _this.question = null;
+
+        _this.inGame = new _inGame.InGame(_inGame.HIT, function () {
+            return _this.on(_flows2.default.CardFor('player')).trigger(new _events2.default.Card.Request('player'));
+        }, _inGame.STICK, function () {
+            return _this.on(_namespace2.default.Game).trigger(new _events2.default.Game.EndOfRound());
+        }, _inGame.SCORE, function () {
+            return _this.on(_namespace2.default.Speech).trigger(new _events2.default.Speech.TellScore());
+        }, _inGame.NEW_GAME, function () {
+            return _this.newGame();
+        }, _inGame.YES, function () {
+            return _this.confirm(_inGame.YES);
+        }, _inGame.NO, function () {
+            return _this.confirm(_inGame.NO);
+        }, _inGame.NEVERMIND, function () {
+            return _this.inGame.reset();
+        });
+
+        _this.outGame = new _outGame.OutGame(_outGame.NEW_GAME, function () {
+            return _this.on(_namespace2.default.Game).trigger(new _events2.default.Game.Reset());
+        });
+
+        _this.activeListener = _this.inGame;
         return _this;
     }
 
@@ -2046,6 +2441,32 @@ var SpeechComponent = function (_Fiber$DataComponent) {
             }, _events2.default.Speech.Speaking, function (event) {
                 return _this2.stop();
             });
+            this.on(_namespace2.default.Game).listen(_events2.default.Game.Reset, function (event) {
+                _this2.activeListener = _this2.inGame;console.log('in');
+            }, _events2.default.Game.Over, function (event) {
+                _this2.activeListener = _this2.outGame;console.log('out');
+            });
+        }
+    }, {
+        key: 'newGame',
+        value: function newGame() {
+            this.question = new _events2.default.Speech.Say('are you sure?');
+            this.on(_flows2.default.Confirm(_events2.default.Game.Reset.on(_namespace2.default.Game))).trigger(this.question);
+        }
+    }, {
+        key: 'confirm',
+        value: function confirm(answer) {
+            if (this.question && answer === _inGame.YES) {
+                var _question$flow$steps$ = this.question.flow.steps.pop(),
+                    event = _question$flow$steps$.event,
+                    namespace = _question$flow$steps$.namespace;
+
+                this.question = null;
+
+                this.on(namespace).trigger(new event());
+            } else {
+                this.question = null;
+            }
         }
     }, {
         key: 'start',
@@ -2064,45 +2485,7 @@ var SpeechComponent = function (_Fiber$DataComponent) {
     }, {
         key: 'onCommand',
         value: function onCommand(speechEvent) {
-            var results = speechEvent.results,
-                resultIndex = speechEvent.resultIndex;
-
-            var voiceCommand = results[resultIndex][0].transcript.toLowerCase();
-
-            console.log(voiceCommand);
-
-            var understood = false;
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-                for (var _iterator = commands[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var cmd = _step.value;
-
-                    if (cmd.regex.test(voiceCommand)) {
-                        console.log('heard command', cmd.regex.toString());
-                        this.on(cmd.namespace).trigger(cmd.event());
-                        understood = true;
-                        break;
-                    }
-                }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
-            }
-
-            if (!understood) {
+            if (!this.activeListener.input(speechEvent)) {
                 this.on(_namespace2.default.Speech).trigger(new _events2.default.Speech.Say("didn't catch that"));
             }
         }
@@ -2113,8 +2496,81 @@ var SpeechComponent = function (_Fiber$DataComponent) {
 
 exports.default = SpeechComponent;
 
+
+var commands = [{
+    regex: /new.+(game|one|round)/,
+    namespace: _flows2.default.Confirm(_events2.default.Game.Reset.on(_namespace2.default.Game)),
+    event: function event() {
+        Question = new _events2.default.Speech.Say('are you sure?');
+        return Question;
+    }
+}, {
+    regex: /yes|yep|yeah/,
+    namespace: _namespace2.default.Game,
+    event: function event() {
+        if (Question) {
+            var ActionEvent = Question.flow.steps.pop().event;
+            Question = null;
+
+            return new ActionEvent();
+        } else {
+            return false;
+        }
+    }
+}, {
+    regex: /no|nope|nah/,
+    namespace: _namespace2.default.Speech,
+    event: function event() {
+        Question = null;
+
+        return new _events2.default.Speech.Say('Ok.');
+    }
+}];
+
 /***/ }),
-/* 31 */
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.InGame = exports.NEVERMIND = exports.NO = exports.YES = exports.SCORE = exports.STICK = exports.HIT = exports.NEW_GAME = undefined;
+
+var _commandListener = __webpack_require__(7);
+
+var NEW_GAME = exports.NEW_GAME = 'NEW_GAME';
+var HIT = exports.HIT = 'HIT';
+var STICK = exports.STICK = 'STICK';
+var SCORE = exports.SCORE = 'SCORE';
+var YES = exports.YES = 'YES';
+var NO = exports.NO = 'NO';
+var NEVERMIND = exports.NEVERMIND = 'NEVERMIND';
+
+var InGame = exports.InGame = _commandListener.CommandListener.withCommands((0, _commandListener.AllOf)('new', 'game'), NEW_GAME, (0, _commandListener.AllOf)('new', 'one'), (0, _commandListener.AllOf)('new', 'card'), (0, _commandListener.AllOf)('hit'), HIT, (0, _commandListener.AllOf)('stay'), (0, _commandListener.AllOf)('stick'), STICK, (0, _commandListener.AllOf)('my', 'score'), SCORE, (0, _commandListener.AnyOf)('yes', 'yeah', 'yup'), YES, (0, _commandListener.AnyOf)('no', 'nope'), NO, (0, _commandListener.AllOf)('forget', 'it'), (0, _commandListener.AllOf)('never', 'mind'), (0, _commandListener.AnyOf)('whatever'), NEVERMIND);
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.OutGame = exports.NEW_GAME = undefined;
+
+var _commandListener = __webpack_require__(7);
+
+var NEW_GAME = exports.NEW_GAME = 'NEW_GAME';
+
+var OutGame = exports.OutGame = _commandListener.CommandListener.withCommands((0, _commandListener.AllOf)('new', 'game'), (0, _commandListener.AllOf)('again'), NEW_GAME);
+
+/***/ }),
+/* 34 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
