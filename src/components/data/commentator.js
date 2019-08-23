@@ -136,11 +136,9 @@ class CommentatorComponent extends Fiber.DataComponent {
             j: 'jack', q: 'queen', k: 'king', a: 'ace'
         };
 
-        if(card.suit == 'diams') {
-            card.suit = 'diamonds';
-        }
+        const suit = card.suit === 'diams' ? 'diamonds' : card.suit;
 
-        return (rankNames[card.rank] || card.rank) + ' of ' + card.suit;
+        return (rankNames[card.rank] || card.rank) + ' of ' + suit;
     }
 
     say(txt, rate = 1.2, volume = 1) {
